@@ -1,4 +1,3 @@
-
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
@@ -27,10 +26,8 @@ export default class Sticky extends Component {
   }
 
   state = {
-    isStickyTop: false,
-    isStickyBot: false,
-    wasStickyBot: false,
-    wasStickyTop: false,
+    isSticky: false,
+    wasSticky: false,
     style: { }
   }
 
@@ -45,7 +42,7 @@ export default class Sticky extends Component {
   }
 
   componentDidUpdate() {
-    this.placeholder.style.paddingBottom = this.props.disableCompensation ? 0 : `${this.state.isStickyTop || this.state.isStickyBot ? this.state.calculatedHeight : 0}px`
+    this.placeholder.style.paddingBottom = this.props.disableCompensation ? 0 : `${this.state.isSticky ? this.state.calculatedHeight : 0}px`
   }
 
   handleContainerEvent = ({ distanceFromTop, distanceFromBottom, eventSource }) => {
@@ -54,8 +51,7 @@ export default class Sticky extends Component {
     let preventingStickyStateChanges = false;
     if (this.props.relative) {
         preventingStickyStateChanges = eventSource !== parent;
-        distanceFromTop = this.placeholder.offsetTop - (eventSource.scrollTop + eventSource.offsetTop);
-        distanceFromBottom = - this.placeholder.offsetBottom + (eventSource.scrollBottom + eventSource.offsetBottom);
+        distanceFromTop = -(eventSource.scrollTop + eventSource.offsetTop) + this.placeholder.offsetTop
     }
 
     const placeholderClientRect = this.placeholder.getBoundingClientRect();
@@ -65,7 +61,7 @@ export default class Sticky extends Component {
     const bottomDifference = distanceFromBottom - this.props.bottomOffset - calculatedHeight;
 
     const wasSticky = !!this.state.isSticky;
-    const isStickyTop = preventingStickyStateChanges ? wasSticky : (distanceFromTop <= -this.props.topOffset && distanceFromBottom > -this.props.bottomOffset)||(distanceFromBot >= -this.props.bottomOffset && distanceFromTop);
+    const isSticky = preventingStickyStateChanges ? wasSticky : (distanceFromTop <= -this.props.topOffset && distanceFromBottom > -this.props.bottomOffset);
 
     distanceFromBottom = (this.props.relative ? parent.scrollHeight - parent.scrollTop : distanceFromBottom) - calculatedHeight;
 
